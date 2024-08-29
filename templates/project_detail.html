@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.name }} - Project Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Project Details</h1>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="card-title">{{ project.name }}</h2>
+        </div>
+        <div class="card-body">
+            <p class="card-text"><strong>Description:</strong> {{ project.description|default:"No description provided" }}</p>
+            <p class="card-text"><strong>Created:</strong> {{ project.created_at|date:"F d, Y H:i" }}</p>
+            <p class="card-text"><strong>Last Updated:</strong> {{ project.updated_at|date:"F d, Y H:i" }}</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title d-flex justify-content-between align-items-center">
+                        Actors
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addActorModal">
+                            Add Actor
+                        </button>
+                    </h2>
+                </div>
+                <div class="card-body">
+                    {% if actors %}
+                        <ul class="list-group">
+                            {% for actor in actors %}
+                                <li class="list-group-item">{{ actor.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No actors defined for this project.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title d-flex justify-content-between align-items-center">
+                        Use Cases
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addUseCaseModal">
+                            Add Use Case
+                        </button>
+                    </h2>
+                </div>
+                <div class="card-body">
+                    {% if use_cases %}
+                        <ul class="list-group">
+                            {% for use_case in use_cases %}
+                                <li class="list-group-item">{{ use_case.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No use cases defined for this project.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title d-flex justify-content-between align-items-center">
+                        Transactions
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addTransactionModal">
+                            Add Transaction
+                        </button>
+                    </h2>
+                </div>
+                <div class="card-body">
+                    {% if transactions %}
+                        <ul class="list-group">
+                            {% for transaction in transactions %}
+                                <li class="list-group-item">{{ transaction.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No transactions defined for this project.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <h2 class="mb-3">Factors</h2>
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Technical Factors</h3>
+                </div>
+                <div class="card-body">
+                    {% if project.technical_factors.all %}
+                        <ul class="list-group">
+                            {% for factor in project.technical_factors.all %}
+                                <li class="list-group-item">
+                                    {{ factor.name }} (Weight: {{ factor.weight }}, Value: {{ factor.value }})
+                                    <br>
+                                    <small>Impact: {{ factor.get_impact_factor }}</small>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No technical factors defined for this project.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Environmental Factors</h3>
+                </div>
+                <div class="card-body">
+                    {% if project.environmental_factors.all %}
+                        <ul class="list-group">
+                            {% for factor in project.environmental_factors.all %}
+                                <li class="list-group-item">
+                                    {{ factor.name }} (Weight: {{ factor.weight }}, Value: {{ factor.value }})
+                                    <br>
+                                    <small>Impact: {{ factor.get_impact_factor }}</small>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No environmental factors defined for this project.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="mb-3">UCP Components</h2>
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Unadjusted Use Case Points (UUCP)</h3>
+                </div>
+                <div class="card-body">
+                    <p><strong>Unadjusted Actor Weight (UAW):</strong> {{ project.uaw }}</p>
+                    <p><strong>Unadjusted Use Case Weight (UUCW):</strong> {{ project.uucw }}</p>
+                    <p><strong>UUCP:</strong> {{ project.uucp }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Technical Complexity Factor (TCF)</h3>
+                </div>
+                <div class="card-body">
+                    <p><strong>Technical Factor (TF):</strong> {{ project.tf }}</p>
+                    <p><strong>TCF:</strong> {{ project.tcf }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Environmental Complexity Factor (ECF)</h3>
+                </div>
+                <div class="card-body">
+                    <p><strong>Environmental Factor (EF):</strong> {{ project.ef }}</p>
+                    <p><strong>ECF:</strong> {{ project.ecf }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Final UCP</h3>
+                </div>
+                <div class="card-body">
+                    <h4 class="text-center">{{ project.ucp }}</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Actor Modal -->
+    <div class="modal fade" id="addActorModal" tabindex="-1" aria-labelledby="addActorModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addActorModalLabel">Add New Actor</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addActorForm" method="post" action="{% url 'add_actor' project.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="{{ actor_form.name.id_for_label }}" class="form-label">{{ actor_form.name.label }}</label>
+                            {{ actor_form.name }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ actor_form.actor_type.id_for_label }}" class="form-label">{{ actor_form.actor_type.label }}</label>
+                            {{ actor_form.actor_type }}
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Actor</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Use Case Modal -->
+    <div class="modal fade" id="addUseCaseModal" tabindex="-1" aria-labelledby="addUseCaseModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addUseCaseModalLabel">Add New Use Case</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addUseCaseForm" method="post" action="{% url 'add_use_case' project.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="{{ use_case_form.name.id_for_label }}" class="form-label">{{ use_case_form.name.label }}</label>
+                            {{ use_case_form.name }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ use_case_form.description.id_for_label }}" class="form-label">{{ use_case_form.description.label }}</label>
+                            {{ use_case_form.description }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ use_case_form.complexity.id_for_label }}" class="form-label">{{ use_case_form.complexity.label }}</label>
+                            {{ use_case_form.complexity }}
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Use Case</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Transaction Modal -->
+    <div class="modal fade" id="addTransactionModal" tabindex="-1" aria-labelledby="addTransactionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addTransactionModalLabel">Add New Transaction</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addTransactionForm" method="post" action="{% url 'add_transaction' project.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="{{ transaction_form.name.id_for_label }}" class="form-label">{{ transaction_form.name.label }}</label>
+                            {{ transaction_form.name }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ transaction_form.complexity.id_for_label }}" class="form-label">{{ transaction_form.complexity.label }}</label>
+                            {{ transaction_form.complexity }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="use_case">Use Case</label>
+                            <select name="use_case" id="use_case" class="form-control" required>
+                                {% for use_case in use_cases %}
+                                    <option value="{{ use_case.id }}">{{ use_case.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Transaction</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="{% url 'index' %}" class="btn btn-primary">Back to Project List</a>
+</div>
+{% endblock %}
